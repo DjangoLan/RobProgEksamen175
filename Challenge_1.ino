@@ -57,8 +57,8 @@ float proximityRead() {
   Serial.print("Center: ");
   Serial.println(centerValue);
 
-  return centerValue;
   delay(5);
+  return centerValue;
 }
 
 float getDistance() {
