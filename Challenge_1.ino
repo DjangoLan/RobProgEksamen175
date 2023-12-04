@@ -78,8 +78,7 @@ void buzzerCheck() {
   buzzer.playNote(NOTE_E(4), 350, 15);
 }
 
-void challenge1(int selectedDistance) {
-  int distanceFromWall = selectedDistance;
+void challenge1(int distanceFromWall) {
   switch (stageChallenge1) {
     case 0:
       proximityRead();
