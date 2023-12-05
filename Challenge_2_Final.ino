@@ -8,7 +8,6 @@ og jumpere på front sensor array skal være installeret for at forbinde pin 4 t
 
 Zumo32U4Motors motors;
 Zumo32U4LineSensors lineSensors;
-Zumo32U4OLED display;
 
 #define NUM_SENSORS 5
 uint16_t lineSensorValues[NUM_SENSORS];
