@@ -33,7 +33,6 @@ void setup() {
   // put your setup code here, to run once:
   lineSensors.initFiveSensors();
   Serial.begin(9600);
-  randomSeed(analogRead(0));
 }
 
 void challenge2() {
