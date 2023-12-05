@@ -10,8 +10,7 @@ Zumo32U4IMU imu;
 
 #define NUM_SENSORS 5
 uint16_t lineSensorValues[NUM_SENSORS];
-int threshold1 = 500;
-int threshold2 = 600;
+int threshold = 500;
 uint32_t turnAngle = 0;
 double alignAngle = 0;
 
@@ -62,7 +61,8 @@ void challenge_6(int parameter) {
       oled.print((((int32_t)turnAngle >> 16) * 360) >> 16);
       oled.print(F("   "));
       lineSensors.read(lineSensorValues, QTR_EMITTERS_ON);
-      if (lineSensorValues[0] > threshold1 || lineSensorValues[2] > threshold1 || lineSensorValues[4] > threshold1) {
+      
+      if (lineSensorValues[0] > threshold || lineSensorValues[2] > threshold || lineSensorValues[4] > threshold) {
         motors.setSpeeds(0, 0);
       } else if (turnDegrees >= (parameter - 1) && turnDegrees <= (parameter + 1)) {
         motors.setSpeeds(200, 200);
@@ -115,37 +115,4 @@ int32_t getTurnAngleInDegrees() {
   turnSensorUpdate();
   // Calculate the turn angle in degrees
   return (((int32_t)turnAngle >> 16) * 360) >> 16;
-}
-
-void align() {
-  int alignRepetitions = 100;  //Er nødvendig
-  while (alignRepetitions > 0) {
-    oled.gotoXY(0, 0);
-    oled.print(alignRepetitions);
-    delay(50);
-    oled.clear();
-    readLineSensors();
-
-    if (lineSensorValues[0] < threshold2 && lineSensorValues[2] < threshold1 && lineSensorValues[4]) {
-      motors.setSpeeds(50, 50);
-      readLineSensors();
-      delay(10);
-    }
-
-    if (lineSensorValues[4] > threshold2) {
-      motors.setSpeeds(-50, -100);
-      alignRepetitions--;
-      if (lineSensorValues[0] > threshold2 || lineSensorValues[2] > threshold1) {
-        motors.setSpeeds(0, 0);
-      }
-    }
-
-    if (lineSensorValues[0] > threshold2) {
-      motors.setSpeeds(-100, -50);
-      alignRepetitions--;
-      if (lineSensorValues[4] > threshold2 || lineSensorValues[2] > threshold1) {
-        motors.setSpeeds(0, 0);
-      }
-    }
-  }
 }
