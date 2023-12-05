@@ -51,10 +51,10 @@ void challenge_6(int parameter) {
       delay(500);
       turnSensorReset();
       oled.clear();
-      motors.setSpeeds(100, 100);
+/*      motors.setSpeeds(100, 100);
       delay(500);
-      motors.setSpeeds(0, 0);
-      stage = 1;
+      motors.setSpeeds(0, 0);*/
+      stage=1;
       break;
     case 1:
       int32_t turnDegrees = getTurnAngleInDegrees();
@@ -62,7 +62,6 @@ void challenge_6(int parameter) {
       oled.print((((int32_t)turnAngle >> 16) * 360) >> 16);
       oled.print(F("   "));
       lineSensors.read(lineSensorValues, QTR_EMITTERS_ON);
-      printReadingsToSerial();
       if (lineSensorValues[0] > threshold1 || lineSensorValues[2] > threshold1 || lineSensorValues[4] > threshold1) {
         motors.setSpeeds(0, 0);
       } else if (turnDegrees >= (parameter - 1) && turnDegrees <= (parameter + 1)) {
@@ -74,20 +73,6 @@ void challenge_6(int parameter) {
       }
       break;
   }
-}
-int32_t getTurnAngleInDegrees() {
-  turnSensorUpdate();
-  // Calculate the turn angle in degrees
-  return (((int32_t)turnAngle >> 16) * 360) >> 16;
-}
-
-void printReadingsToSerial() {
-  char buffer[80];
-  sprintf(buffer, "%4d %4d %4d\n",
-          lineSensorValues[0],
-          lineSensorValues[2],
-          lineSensorValues[4]);
-  Serial.print(buffer);
 }
 
 void turnSensorSetup() {
@@ -125,6 +110,13 @@ void turnSensorUpdate() {
   int32_t d = (int32_t)turnRate * dt;
   turnAngle += d;
 }
+
+int32_t getTurnAngleInDegrees() {
+  turnSensorUpdate();
+  // Calculate the turn angle in degrees
+  return (((int32_t)turnAngle >> 16) * 360) >> 16;
+}
+
 void align() {
   int alignRepetitions = 100;  //Er nødvendig
   while (alignRepetitions > 0) {
