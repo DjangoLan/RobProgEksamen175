@@ -88,9 +88,13 @@ void challenge7() {
       } else if (distanceR < distanceL) {
         motors.setSpeeds(130, 150);
       }
-
+      stage_chl7++;
+      break;
+    case 1:
       delay(100); //delay op 100 så den lige kører ud så hele koden ikke kører og derefter stopper med det samme pga aline kode.
-
+      stage_ch7++;
+      break;
+    case 2
       if (distanceL == distanceR) {
         motors.setSpeeds(200, 200);
       } else if (distanceR > distanceL) {
@@ -110,7 +114,7 @@ void challenge7() {
         stage_chl7++; // så når denne usagn er opfyldt går den videre til case 1 fordi man så sætter en plus på stage_chl7. 
         break;
       }
-    case 1: // case et, motor stopper. 
+    case 3: // case et, motor stopper. 
       motors.setSpeeds(0, 0);
   }
 }
