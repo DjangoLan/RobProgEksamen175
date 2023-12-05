@@ -11,8 +11,8 @@ Zumo32U4IMU imu;
 #define NUM_SENSORS 5
 uint16_t lineSensorValues[NUM_SENSORS];
 int threshold = 500;
+
 uint32_t turnAngle = 0;
-double alignAngle = 0;
 
 // turnRate is the current angular rate of the gyro, in units of
 // 0.07 degrees per second.
@@ -23,9 +23,9 @@ int16_t gyroOffset;
 // This variable helps us keep track of how much time has passed
 // between readings of the gyro.
 uint16_t gyroLastUpdate = 0;
-//int allignRepetitions = 30;  //Er nødvendig for allign
 
-int i = 0;
+int parameter = 40;
+int allowedError = 1;
 int stage = 0;
 void readLineSensors() {
   lineSensors.read(lineSensorValues, QTR_EMITTERS_ON);
@@ -34,8 +34,6 @@ void readLineSensors() {
 void setup() {
   // put your setup code here, to run once:
   lineSensors.initFiveSensors();
-  Serial.begin(9600);
-  randomSeed(analogRead(0));
 }
 
 void loop() {
@@ -45,32 +43,44 @@ void loop() {
 void challenge_6(int parameter) {
   switch (stage) {
     case 0:
-      align();
+      //align();
       turnSensorSetup();
       delay(500);
       turnSensorReset();
       oled.clear();
-/*      motors.setSpeeds(100, 100);
-      delay(500);
-      motors.setSpeeds(0, 0);*/
-      stage=1;
+      stage = 1;
       break;
     case 1:
       int32_t turnDegrees = getTurnAngleInDegrees();
       oled.gotoXY(0, 0);
-      oled.print((((int32_t)turnAngle >> 16) * 360) >> 16);
+      oled.print(turnDegrees);
       oled.print(F("   "));
-      lineSensors.read(lineSensorValues, QTR_EMITTERS_ON);
-      
-      if (lineSensorValues[0] > threshold || lineSensorValues[2] > threshold || lineSensorValues[4] > threshold) {
-        motors.setSpeeds(0, 0);
-      } else if (turnDegrees >= (parameter - 1) && turnDegrees <= (parameter + 1)) {
-        motors.setSpeeds(200, 200);
-      } else if (turnDegrees < (parameter - 1)) {
+      if (turnDegrees >= (parameter - allowedError) && turnDegrees <= (parameter + allowedError)) {
+        motors.setSpeeds(100, 100);
+        delay(500);
+        stage = 2;
+      } else if (turnDegrees < (parameter - allowedError)) {
         motors.setSpeeds(-100, 100);
-      } else if (turnDegrees > (parameter + 1)) {
+      } else if (turnDegrees > (parameter + allowedError)) {
         motors.setSpeeds(100, -100);
       }
+      break;
+    case 2:
+      lineSensors.read(lineSensorValues, QTR_EMITTERS_ON);
+      if (lineSensorValues[0] > threshold || lineSensorValues[2] > threshold || lineSensorValues[4] > threshold) {
+        motors.setSpeeds(0, 0);
+      } else if (turnDegrees >= (parameter - allowedError) && turnDegrees <= (parameter + allowedError)) {
+        motors.setSpeeds(100, 100);
+      } else if (turnDegrees < (parameter - allowedError)) {
+        motors.setSpeeds(-100, 100);
+      } else if (turnDegrees > (parameter + allowedError)) {
+        motors.setSpeeds(100, -100);
+      }
+      break;
+    default:
+      oled.gotoXY(0, 0);
+      oled.print("Fejl");
+      motors.setSpeeds(0, 0);
       break;
   }
 }
@@ -85,7 +95,8 @@ void turnSensorSetup() {
   delay(500);
   int32_t total = 0;
   for (uint16_t i = 0; i < 1024; i++) {
-    while (!imu.gyroDataReady()) {}
+    // Wait for new data to be available, then read it.
+    while (!imu.gyroDataReady()) {} //gyroDataReady is a Bool returning function. Line 343 in Zumo32U4IMU.cpp
     imu.readGyro();
     total += imu.g.z;
   }
