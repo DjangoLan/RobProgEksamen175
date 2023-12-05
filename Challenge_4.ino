@@ -27,7 +27,6 @@ void readLineSensors() {
 void setup() {
   lineSensors.initFiveSensors();
   Serial.begin(9600);
-  randomSeed(analogRead(0));
 }
 
 
