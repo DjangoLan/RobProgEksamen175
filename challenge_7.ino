@@ -1,29 +1,28 @@
 #include <Wire.h>
-#include <Zumo32U4.h>  //her efter vi biblioteket til zumo32u4
-#include <math.h>
+#include <Zumo32U4.h>  //her henter vi biblioteket til zumo32u4
 
-Zumo32U4Motors motors;  // og her efter vi de forskellige klasser og navn giver dem det man gerne vil kalde.
+Zumo32U4Motors motors;  // og kalder vi på nogle forskellige klasser og angiver dem de "passende" navne.
 Zumo32U4Encoders encoders;
 Zumo32U4LineSensors lineSensors;
 Zumo32U4OLED oled;
 
 
 #define NUM_SENSORS 5
-int16_t lineSensorValues[NUM_SENSORS];
+int16_t lineSensorValues[NUM_SENSORS]; //array på størrelsen med 5
 int threshold1 = 700;  //den værdi der gør at robotten skal stoppe til at align
 int threshold2 = 700;  //den værdi der gør at robotten skal stoppe til at align
 float distanceL;       // her har vi nogle varible i float og int og årsagen til det er float var så vi kunne vi kunne være mere præcis, komma tal
 float distanceR;
 int wheelCirc = 13;   // omkredsen på hjulet i cm
 int threshold = 900;  // den værdi der gør at robotten skal stoppe
-int stage_chl7 = 0;
-int i = 0;
+int stage_chl7 = 0; // bruges til switch statement
+int i = 0; // bruges til switch igen i loop
 
 
 void setup() {
-  Serial.begin(9600); // vi aktivere det så den godt kan snakke sammen med computeren
-  lineSensors.initThreeSensors(); // initialiserer sensonerne 
-  lineSensors.initFiveSensors();
+  Serial.begin(9600); // vi aktivere det så den godt kan snakke sammen med computeren 9600 baudrate = 9600 bits pr. sekund
+  lineSensors.initThreeSensors(); // initialiserer linesensonerne 3 
+  lineSensors.initFiveSensors(); //initialiserer linesensonerne 5 
 }
 
 
@@ -34,7 +33,7 @@ void readLineSensors() { //her læser man lineSensors
 
 void readLinesensor() {
   // Read the sensor values
-  unsigned int sensors[3];
+  unsigned int sensors[3]; //array med størrelsen 3 eller også kaldet elementer. 
   lineSensors.read(sensors);
 
   // Print the sensor values
