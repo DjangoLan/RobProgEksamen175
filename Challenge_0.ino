@@ -63,18 +63,6 @@ bool turnReady = true;
 int roundCounter = 0;
 int stageChallenge5 = 0;
 
-/* turnAngle is a 32-bit unsigned integer representing the amount
-the robot has turned since the last time turnSensorReset was
-called.  This is computed solely using the Z axis of the gyro, so
-it could be inaccurate if the robot is rotated about the X or Y
-axes.
-
-Our convention is that a value of 0x20000000 represents a 45
-degree counter-clockwise rotation.  This means that a uint32_t
-can represent any angle between 0 degrees and 360 degrees.  If
-you cast it to a signed 32-bit integer by writing
-(int32_t)turnAngle, that integer can represent any angle between
--180 degrees and 180 degrees. */
 uint32_t turnAngle = 0;
 // turnRate is the current angular rate of the gyro, in units of
 // 0.07 degrees per second.
@@ -85,7 +73,7 @@ int16_t gyroOffset;
 // This variable helps us keep track of how much time has passed
 // between readings of the gyro.
 uint16_t gyroLastUpdate = 0;
-
+int allowedError = 1;
 //threshold for align code
 int threshold2 = 600;
 
@@ -479,34 +467,46 @@ int32_t getTurnAngleInDegrees() {
 
 //Challenge 6 code
 void challenge_6(int parameter) {
-  switch (stage_chl6) {
+  switch (stage) {
     case 0:
       align();
       turnSensorSetup();
       delay(500);
       turnSensorReset();
       oled.clear();
-      motors.setSpeeds(100, 100);
-      delay(500);
-      motors.setSpeeds(0, 0);
-      stage_chl6 = 1;
+      stage = 1;
       break;
     case 1:
       int32_t turnDegrees = getTurnAngleInDegrees();
       oled.gotoXY(0, 0);
-      oled.print((((int32_t)turnAngle >> 16) * 360) >> 16);
+      oled.print(turnDegrees);
       oled.print(F("   "));
-      lineSensors.read(lineSensorValues, QTR_EMITTERS_ON);
-      printReadingsToSerial();
-      if (lineSensorValues[0] > threshold1 || lineSensorValues[2] > threshold1 || lineSensorValues[4] > threshold1) {
-        motors.setSpeeds(0, 0);
-      } else if (turnDegrees >= (parameter - 1) && turnDegrees <= (parameter + 1)) {
-        motors.setSpeeds(200, 200);
-      } else if (turnDegrees < (parameter - 1)) {
+      if (turnDegrees >= (parameter - allowedError) && turnDegrees <= (parameter + allowedError)) {
+        motors.setSpeeds(100, 100);
+        delay(500);
+        stage = 2;
+      } else if (turnDegrees < (parameter - allowedError)) {
         motors.setSpeeds(-100, 100);
-      } else if (turnDegrees > (parameter + 1)) {
+      } else if (turnDegrees > (parameter + allowedError)) {
         motors.setSpeeds(100, -100);
       }
+      break;
+    case 2:
+      lineSensors.read(lineSensorValues, QTR_EMITTERS_ON);
+      if (lineSensorValues[0] > threshold1 || lineSensorValues[2] > threshold1 || lineSensorValues[4] > threshold1) {
+        motors.setSpeeds(0, 0);
+      } else if (turnDegrees >= (parameter - allowedError) && turnDegrees <= (parameter + allowedError)) {
+        motors.setSpeeds(100, 100);
+      } else if (turnDegrees < (parameter - allowedError)) {
+        motors.setSpeeds(-100, 100);
+      } else if (turnDegrees > (parameter + allowedError)) {
+        motors.setSpeeds(100, -100);
+      }
+      break;
+    default:
+      oled.gotoXY(0, 0);
+      oled.print("Fejl");
+      motors.setSpeeds(0, 0);
       break;
   }
 }
