@@ -66,6 +66,10 @@ void challenge_6(int parameter) {
       }
       break;
     case 2:
+      turnDegrees = getTurnAngleInDegrees();
+      oled.gotoXY(0, 0);
+      oled.print(turnDegrees);
+      oled.print(F("   "));
       lineSensors.read(lineSensorValues, QTR_EMITTERS_ON);
       if (lineSensorValues[0] > threshold || lineSensorValues[2] > threshold || lineSensorValues[4] > threshold) {
         motors.setSpeeds(0, 0);
