@@ -79,19 +79,12 @@ void loop() { //her har vi en switch statement.
 void challenge7() {
   switch (stage_chl7) { // her har vi switch statement
     case 0: //case 0
-      getDistance(); // hvordan den skal forholde sig. 
-      if (distanceL == distanceR) {
-        motors.setSpeeds(200, 200);
-      } else if (distanceR > distanceL) {
-        motors.setSpeeds(150, 130);
-      } else if (distanceR < distanceL) {
-        motors.setSpeeds(130, 150);
-      }
-      delay(100);
+      getDistance(); // her henter vi funktion getDistance so vi kan bruge de værdierne vi har i funktionen. 
+      motors.setSpeeds(200, 200);
       stage_chl7++;
       break;
     case 1:
-      delay(10); //delay op 100 så den lige kører ud så hele koden ikke kører og  stopper med det samme pga aline kode.
+      delay(50); //delay op 100 så den lige kører ud så hele koden ikke kører og  stopper med det samme pga aline kode.
       stage_chl7++;
       break;
     case 2
