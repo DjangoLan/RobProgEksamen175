@@ -123,7 +123,7 @@ void turnSensorUpdate() {
   uint16_t dt = m - gyroLastUpdate;
   gyroLastUpdate = m;
   int32_t d = (int32_t)turnRate * dt;
-  turnAngle += d;
+  turnAngle += (int64_t)d * 14680064 / 17578125;;
 }
 
 int32_t getTurnAngleInDegrees() {
