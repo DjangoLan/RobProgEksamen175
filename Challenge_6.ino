@@ -1,3 +1,4 @@
+//https://arduinogetstarted.com/faq/switch-case-statement-does-not-work-correctly
 #include <Wire.h>
 #include <Zumo32U4.h>
 #include <math.h>
